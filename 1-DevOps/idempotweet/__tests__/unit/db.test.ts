@@ -52,10 +52,14 @@ describe("initializeDatabase", () => {
   });
 
   it("re-throws on database error", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("Connection refused");
     mockPoolQuery.mockRejectedValueOnce(error);
 
     await expect(initializeDatabase()).rejects.toThrow("Connection refused");
+
+    expect(consoleSpy).toHaveBeenCalledWith("Failed to initialize database:", error);
+    consoleSpy.mockRestore();
   });
 });
 
