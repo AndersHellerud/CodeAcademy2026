@@ -113,6 +113,38 @@ describe("IdemsFeed", () => {
   });
 });
 
+describe("IdemsFeed demo mode", () => {
+  it("shows demo mode banner when API returns demoMode: true", async () => {
+    server.use(
+      http.get("/api/idems", () =>
+        HttpResponse.json({
+          items: [
+            {
+              id: "idem-1",
+              author: "Alice",
+              content: "Demo content",
+              createdAt: new Date().toISOString(),
+              isSeeded: false,
+            },
+          ],
+          page: 1,
+          pageSize: 20,
+          totalCount: 1,
+          hasMore: false,
+          nextPage: null,
+          demoMode: true,
+        })
+      )
+    );
+
+    render(<IdemsFeed />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Demo-modus/)).toBeInTheDocument();
+    });
+  });
+});
+
 describe("IdemsFeed infinite scroll behavior", () => {
   beforeEach(() => {
     server.use(
